@@ -1,5 +1,7 @@
 package com.bszeliga.rxjava.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Observer;
 import rx.subjects.PublishSubject;
@@ -12,6 +14,7 @@ import java.io.InputStreamReader;
  * Created by bszeliga on 1/24/14.
  */
 public class SimpleExample implements Observer<String> {
+    private final static Logger logger = LoggerFactory.getLogger(SimpleExample.class);
 
     public SimpleExample(Observable observable) {
         observable.subscribe(this);
@@ -25,10 +28,10 @@ public class SimpleExample implements Observer<String> {
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         String s = "";
         while (!s.equals("-1")) {
-            System.out.println("Enter a string (-1 to exit): ");
+            logger.info("Enter a string (-1 to exit): ");
 
             s = bufferRead.readLine();
-            System.out.println(String.format("Value of %s  being published", s));
+            logger.info(String.format("Value of %s  being published", s));
 
             publish.onNext(s);
         }
@@ -36,25 +39,24 @@ public class SimpleExample implements Observer<String> {
         publish.onCompleted();
 
         String last = "LAST STRING";
-        System.out.println("publishing last value = " + last);
+        logger.info("publishing last value = " + last);
         publish.onNext(last);
 
-        System.out.println("Exiting");
+        logger.info("Exiting");
     }
 
     @Override
     public void onCompleted() {
-        System.out.println("On Complete.");
+        logger.info("On Complete.");
     }
 
     @Override
     public void onError(Throwable e) {
-        System.out.println("Received throwable");
-        e.printStackTrace();
+        logger.error("onError", e);
     }
 
     @Override
     public void onNext(String args) {
-        System.out.println("Received string = " + args.toString());
+        logger.info("Received string = " + args.toString());
     }
 }
