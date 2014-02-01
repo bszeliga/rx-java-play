@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Observer;
 import rx.subjects.PublishSubject;
+import rx.util.functions.Func1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,17 +14,22 @@ import java.io.InputStreamReader;
 /**
  * Created by bszeliga on 1/24/14.
  */
-public class SimpleExample implements Observer<String> {
+public class SimpleExample implements Observer<Integer> {
     private final static Logger logger = LoggerFactory.getLogger(SimpleExample.class);
 
-    public SimpleExample(Observable observable) {
+    public SimpleExample(Observable<Integer> observable) {
         observable.subscribe(this);
     }
 
     public static void main(String [] args) throws IOException {
 
         final PublishSubject publish = PublishSubject.create();
-        final SimpleExample example = new SimpleExample(publish);
+        final SimpleExample example = new SimpleExample(publish.map(new Func1<String, Integer>() {
+            @Override
+            public Integer call(String o) {
+                return Integer.valueOf(o);
+            }
+        }));
 
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         String s = "";
@@ -56,7 +62,7 @@ public class SimpleExample implements Observer<String> {
     }
 
     @Override
-    public void onNext(String args) {
-        logger.info("Received string = " + args.toString());
+    public void onNext(Integer args) {
+        logger.info("Received integer = " + args.toString());
     }
 }
